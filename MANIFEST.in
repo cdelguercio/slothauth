@@ -1,0 +1,7 @@
+include README.md
+include LICENSE.txt
+
+include run_tests.py
+include make_migrations.py
+
+graft slothauth

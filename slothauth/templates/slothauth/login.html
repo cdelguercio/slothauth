@@ -1,0 +1,11 @@
+<div class="container">
+    <form id="login-form" method="POST" action="{% url 'account-login' %}">
+        {% csrf_token %}
+        <input type="text" name="email" placeholder="E-mail address"/>
+        <input type="password" name="password" placeholder="Password"/>
+
+        <button class="primary" type="submit">Submit</button><br />
+
+        <p>Forgot password or email? <a href="{% url 'password_reset' %}">Reset</a></p>
+    </form>
+</div>
