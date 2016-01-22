@@ -1,0 +1,16 @@
+<div class="container">
+    {% if request.user.is_authenticated %}
+    <div>
+        <h1>Please log out before signing up.</h1>
+    </div>
+    {% endif %}
+    {% if not request.user.is_authenticated %}
+    <form id="signup-form" method="POST" action="{% url 'account-signup' %}">
+        {% csrf_token %}
+        <input type="text" name="email" placeholder="E-mail address"/>
+        <input type="password" name="password" placeholder="Password"/>
+
+        <button type="submit">Submit</button><br />
+    </form>
+    {% endif %}
+</div>

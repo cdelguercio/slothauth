@@ -1,0 +1,7 @@
+<div class="container">
+    <form id="logout-form" method="POST" action="{% url 'account-logout' %}">
+        {% csrf_token %}
+
+        <button class="primary" type="submit">Submit</button><br />
+    </form>
+</div>

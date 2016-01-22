@@ -1,0 +1,9 @@
+<div class="container">
+    <form id="change-email-form" method="POST" action="{% url 'account-change-email' %}">
+        {% csrf_token %}
+        <input name="email" placeholder="New Email"/>
+        <input name="confirm_email" placeholder="Confirm New Email"/>
+
+        <button class="primary" type="submit">Submit</button><br />
+    </form>
+</div>
