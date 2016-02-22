@@ -12,7 +12,7 @@ router.register(r'accounts', AccountViewSet)
 router.register(r'accounts/auth', AuthViewSet)
 
 urlpatterns = [
-    url(r'^api/' + settings.API_VERSION + '/', include(router.urls)),
+    url(r'^api/' + settings.API_VERSION + '/', include(router.urls)), # TODO makes sense to have a settings.API_BASE_URL rather than a settings.API_VERSION?
     url(r'^signup/?', signup, name='signup'),
     url(r'^login/?', login, name='login'),
     url(r'^password_reset/?', password_reset, name='password_reset'),
@@ -25,3 +25,5 @@ urlpatterns = [
     #(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm',
     #        {'post_reset_redirect' : '/password-reset-done/'}),
 ]
+
+# TODO create setting for turning on and off debug urls
