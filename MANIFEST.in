@@ -5,3 +5,4 @@ include run_tests.py
 include make_migrations.py
 
 graft slothauth
+graft test_mocks

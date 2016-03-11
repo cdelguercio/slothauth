@@ -17,6 +17,16 @@ class PasswordlessUserMiddleware(object):
                 login(request, user)
 
 
+class OneTimeAuthenticationKeyMiddleware(object):
+
+    def process_request(self, request):
+        one_time_authentication_key = request.GET.get(settings.ONE_TIME_AUTHENTICATION_KEY_GET_PARAM, None)
+        if one_time_authentication_key and not (one_time_authentication_key == ''):
+            user = authenticate(one_time_authentication_key=one_time_authentication_key)
+            if user and user.is_active:
+                login(request, user)
+
+
 class ImpersonateMiddleware(object):
 
     def process_request(self, request):

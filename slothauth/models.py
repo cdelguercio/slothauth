@@ -33,6 +33,8 @@ class SlothAuthBaseUser(AbstractBaseUser, PermissionsMixin):
     # Passwordless fields
 
     passwordless_key = RandomField(max_length=32)
+    one_time_authentication_key = RandomField(max_length=32)
+    password_reset_key = RandomField(max_length=32)
 
     objects = UserManager()
 

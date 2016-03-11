@@ -1,14 +1,10 @@
 import factory
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from .models import SlothAuthBaseUser
 
-
-class Account(SlothAuthBaseUser):
-
-    class Meta:
-        app_label = 'slothauth'
+Account = get_user_model()
 
 
 class AccountFactory(factory.django.DjangoModelFactory):

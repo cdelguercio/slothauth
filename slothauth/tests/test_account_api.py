@@ -16,15 +16,10 @@ from .utils import obj_is
 from .api_utils import is_user_me
 
 from ..factories import AccountFactory
-from ..models import SlothAuthBaseUser
 
 from .. import settings
 
-
-class Account(SlothAuthBaseUser):
-
-    class Meta:
-        app_label = 'slothauth'
+Account = get_user_model()
 
 
 class PasswordlessAuthTest(TestCase):
@@ -82,6 +77,41 @@ class PasswordlessAuthTest(TestCase):
         uid = session.get_decoded().get('_auth_user_id')
         users = Account.objects.filter(pk=uid)
         self.assertEqual(users.count(), 1)
+
+
+class OneTimeAuthenticationKeyAuthTest(TestCase):
+
+    ACCOUNT_PASSWORD = 'test'
+
+    def setUp(self, *args, **kwargs):
+        super(TestCase, self).setUp(*args, **kwargs)
+
+        self.account_1 = Account(email='test1@taggler.com')
+        self.account_1.set_password(self.ACCOUNT_PASSWORD)
+        self.account_1.save()
+
+    def test_one_time_authentication_key_middleware(self):
+        c = Client()
+
+        def get_sessionid(response):
+            return response.cookies.get('sessionid').value
+
+        # Verify we don't have a cookie set when hitting the login page without login
+        response = c.get('/login')
+        self.assertIsNone(response.cookies.get('sessionid'))
+
+        # Save one time authentication key
+        one_time_authentication_key = self.account_1.one_time_authentication_key
+
+        # Verify the cookie is set after hitting the homepage with a one time authentication key
+        response = c.get('/login', {settings.ONE_TIME_AUTHENTICATION_KEY_GET_PARAM: one_time_authentication_key})
+        session = Session.objects.get(session_key=get_sessionid(response))
+        uid = session.get_decoded().get('_auth_user_id')
+        users = Account.objects.filter(pk=uid)
+        self.assertEqual(users.count(), 1)
+
+        # Check that one time authentication key changed upon use
+        self.assertNotEqual(users[0].one_time_authentication_key, one_time_authentication_key)
 
 
 class SignupEmailTest(TestCase):

@@ -23,6 +23,7 @@ settings.configure(
         'rest_framework',
         'rest_framework.authtoken',
         'slothauth',
+        'test_mocks',
     ),
     DATABASES={
         'default': {
@@ -49,3 +50,5 @@ settings.configure(
 
 django.setup()
 call_command('makemigrations', 'slothauth')
+call_command('makemigrations', 'test_mocks')
+

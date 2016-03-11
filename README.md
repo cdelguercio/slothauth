@@ -12,6 +12,8 @@ SlothAuth is a Django app for adding user authentication and accounts with the f
 - Password Reset
 - Change email
 
+Current SlothAuth has been tested with Django 1.9.x
+
 ### Credit
 
 SlothAuth was authored by Chris Del Guercio and Shane Zilinskas
@@ -54,6 +56,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'slothauth.middleware.PasswordlessUserMiddleware',
+    'slothauth.middleware.OneTimeAuthenticationKeyMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

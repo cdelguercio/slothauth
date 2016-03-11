@@ -11,6 +11,8 @@ ACCOUNT_NATURAL_KEY = getattr(settings, 'ACCOUNT_NATURAL_KEY', 'email')
 
 PASSWORDLESS_GET_PARAM = getattr(settings, 'PASSWORDLESS_GET_PARAM', 'key')
 
+ONE_TIME_AUTHENTICATION_KEY_GET_PARAM = getattr(settings, 'ONE_TIME_AUTHENTICATION_KEY_GET_PARAM', 'otk')
+
 API_VERSION = getattr(settings, 'API_VERSION', 'v1')
 
 # Domain for links in email templates
