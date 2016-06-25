@@ -15,6 +15,8 @@ ONE_TIME_AUTHENTICATION_KEY_GET_PARAM = getattr(settings, 'ONE_TIME_AUTHENTICATI
 
 API_VERSION = getattr(settings, 'API_VERSION', 'v1')
 
+ACCOUNT_FORM = getattr(settings, 'ACCOUNT_FORM', 'slothauth.forms.AccountForm')
+
 # Domain for links in email templates
 ACCOUNT_EMAIL_DOMAIN = getattr(settings, 'ACCOUNT_EMAIL_DOMAIN', 'example.com')
 

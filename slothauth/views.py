@@ -1,23 +1,24 @@
+import importlib
 import re
 
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import get_user_model
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
-
-from .forms import AccountForm
 from .serializers import AccountSerializer, BasicAccountSerializer
 
 
 Account = get_user_model()
+module_name, class_name = settings.ACCOUNT_FORM.rsplit('.', 1)
+AccountForm = getattr(importlib.import_module(module_name), class_name)
 
 
 class QuietBasicAuthentication(BasicAuthentication):
@@ -43,6 +44,7 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def login(self, request, *args, **kwargs):
+
         user = authenticate(email=request.data.get('email'), username=request.data.get('username'), password=request.data.get('password'), passwordless_key=request.data.get('passwordless_key'))
         if user:
             django_login(request, user)
@@ -60,6 +62,7 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def reset_password(self, request, *args, **kwargs):
+
         email = request.data.get('email', '').strip().lower()
         account = Account.objects.filter(email=email).last()
         if account:
@@ -99,6 +102,7 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @list_route(methods=['post', 'delete'])
     def logout(self, request, *args, **kwargs):
+
         django_logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -110,6 +114,7 @@ class AccountViewSet(viewsets.GenericViewSet):
 
     @list_route(methods=['get', 'post', 'patch'])
     def me(self, request, *args, **kwargs):
+
         if not request.user.is_authenticated():
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         if request.method == 'PATCH':
@@ -120,63 +125,87 @@ class AccountViewSet(viewsets.GenericViewSet):
             return Response({'error': form.errors}, status=status.HTTP_412_PRECONDITION_FAILED)
         return Response(AccountSerializer(request.user).data)
 
+    ###
+    # change_email
+    #  currently requires a password to work
+    ###
     @list_route(methods=['post', 'patch'])
     def change_email(self, request, *args, **kwargs):
 
-        if 'email' in request.data and 'confirm_email' in request.data:
-            if request.data['email'].strip().lower() == request.data['confirm_email'].strip().lower():
-                if re.match(r"[^@]+@[^@]+\.[^@]+", request.data['email']):
-                    request.user.email = request.data['email'].strip()
-                    request.user.save()
+        if 'email' in request.data and 'confirm_email' in request.data and 'password' in request.data:
+            if request.user.check_password(request.data['password']):
+                if request.data['email'].strip().lower() == request.data['confirm_email'].strip().lower():
+                    if re.match(r"[^@]+@[^@]+\.[^@]+", request.data['email']):
+                        request.user.email = request.data['email'].strip()
+                        request.user.save()
 
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                        return Response(status=status.HTTP_204_NO_CONTENT)
 
-                return Response({'error': 'EMAIL INVALID'}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({'error': 'EMAIL MISMATCH'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': 'EMAIL INVALID'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'EMAIL MISMATCH'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'BAD PASSWORD'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'EMAIL MISSING'}, status=status.HTTP_400_BAD_REQUEST)
 
+    ###
+    # change_password
+    #  currently requires a password to work
+    ###
     @list_route(methods=['post', 'patch'])
     def change_password(self, request, *args, **kwargs):
-        if 'password' not in request.data or 'password_repeat' not in request.data:
+
+        if 'current_password' not in request.data or 'password' not in request.data or 'password_repeat' not in request.data:
             return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.user.check_password(request.data['current_password']):
+            return Response({'error': 'Incorrect password'}, status=status.HTTP_400_BAD_REQUEST)
         if request.data['password'] != request.data['password_repeat']:
             return Response({'error': 'Password mismatch'}, status=status.HTTP_400_BAD_REQUEST)
         request.user.set_password(request.data['password'])
         request.user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @list_route(methods=['post', 'patch'])
+    def change_settings(self, request, *args, **kwargs):
+
+        if 'first_name' in request.data:
+            request.user.first_name = request.data['first_name']
+        if 'last_name' in request.data:
+            request.user.last_name = request.data['last_name']
+
+        request.user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 def signup(request):
-    return render_to_response('slothauth/signup.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/signup.html')
 
 
 def login(request):
-    return render_to_response('slothauth/login.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/login.html')
 
 
 def password_reset(request):
-    return render_to_response('slothauth/password_reset.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/password_reset.html')
 
 
 def change_email(request):
-    return render_to_response('slothauth/change_email.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/change_email.html')
 
 
 def passwordless_check_email(request):
-    return render_to_response('slothauth/passwordless_check_email.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/passwordless_check_email.html')
 
 
 def profile(request):
-    return render_to_response('slothauth/profile.html', context_instance=RequestContext(request, {'email': request.user.email}))
+    return render(request, 'slothauth/profile.html', context={'email': request.user.email})
 
 
 def logout(request):
-    return render_to_response('slothauth/logout.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/logout.html')
 
 
 def passwordless_signup(request):
-    return render_to_response('slothauth/passwordless_signup.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/passwordless_signup.html')
 
 
 def passwordless_login(request):
-    return render_to_response('slothauth/passwordless_login.html', context_instance=RequestContext(request))
+    return render(request, 'slothauth/passwordless_login.html')

@@ -114,3 +114,14 @@ ACCOUNT_EMAIL_FROM = 'example@example.com'
 ACCOUNT_EMAIL_PASSWORD_RESET_SUBJECT = 'Password Reset'
 ACCOUNT_EMAIL_PASSWORDLESS_LOGIN_SUBJECT = 'Your Login Link'
 ```
+
+9) (Optional) Override the AccountForm in your account forms file and add the ACCOUNT_FORM value in your settings.py file:
+```
+from slothauth.forms import AccountForm
+
+class CustomAccountForm(AccountForm):
+```
+
+```
+ACCOUNT_FORM = 'your_app.forms.CustomAccountForm'
+```
