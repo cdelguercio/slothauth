@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .mail import send_mail
 from .managers import UserManager
-from .utils import RandomField
+from .utils import RandomField, CiEmailField
 
 from . import settings
 
@@ -21,7 +21,7 @@ class SlothAuthBaseUser(AbstractBaseUser, PermissionsMixin):
 
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    email = models.EmailField(_('email address'), unique=True)
+    email = CiEmailField(_('email address'), unique=True)
     is_staff = models.BooleanField(_('staff status'),
                                    default=False,
                                    help_text=_('Designates whether the user can log into this admin site.'))

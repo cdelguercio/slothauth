@@ -24,6 +24,10 @@ SlothAuth was authored by Chris Del Guercio and Shane Zilinskas
 pip install slothauth
 ```
 
+### Updating SlothAuth
+
+Since SlothAuth's SlothAuthBaseUser is abstract, it might be necessary to run makemigrations on your user account app after updating SlothAuth.
+
 ### Quick Start
 
 1) Add slothauth to your INSTALLED_APPS in your project's settings.py file:

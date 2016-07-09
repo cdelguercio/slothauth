@@ -57,7 +57,7 @@ class AuthViewSet(viewsets.GenericViewSet):
                     return Response(status=status.HTTP_412_PRECONDITION_FAILED)
                 else:
                     account.send_passwordless_login_email()
-                    return Response(status=418)
+                    return Response(status=status.HTTP_200_OK)
         return Response({'error': 'user not authenticated and password is given'}, status=status.HTTP_400_BAD_REQUEST)
 
     @list_route(methods=['post'])
@@ -73,32 +73,17 @@ class AuthViewSet(viewsets.GenericViewSet):
     @list_route(methods=['post'])
     def signup(self, request, *args, **kwargs):
 
-        if not request.user.is_authenticated():
-            email = request.data.get('email', '').strip().lower()
-            accounts = Account.objects.filter(email=email)
-            if accounts.count() == 0:
+        form = AccountForm(data=request.data)
+        if form.is_valid():
+            form.save()
 
-                form = AccountForm(data=request.data)
-                if form.is_valid():
-                    form.save()
+            # Force the login
+            user = authenticate(passwordless_key=form.instance.passwordless_key, force=True)
+            django_login(request, user)
 
-                    # Force the login
-                    user = authenticate(passwordless_key=form.instance.passwordless_key, force=True)
-                    django_login(request, user)
-
-                    user.save()
-                    return Response(AccountSerializer(request.user).data)
-                return Response({'error': form.errors}, status=status.HTTP_412_PRECONDITION_FAILED)
-            else:
-                account = accounts.last()
-                if account.is_passwordless:
-                    # send login email
-                    return Response(BasicAccountSerializer(account).data, status=status.HTTP_403_FORBIDDEN)
-                else:
-                    # is password account - tell interface to present password prompt
-                    return Response(status=status.HTTP_409_CONFLICT)
-
-        return Response(status=status.HTTP_409_CONFLICT)
+            user.save()
+            return Response(AccountSerializer(request.user).data)
+        return Response({'error': form.errors}, status=status.HTTP_412_PRECONDITION_FAILED)
 
     @list_route(methods=['post', 'delete'])
     def logout(self, request, *args, **kwargs):
