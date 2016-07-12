@@ -1,7 +1,6 @@
 import importlib
 import re
 
-from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
@@ -14,6 +13,8 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
 from .serializers import AccountSerializer, BasicAccountSerializer
+
+from . import settings
 
 
 Account = get_user_model()

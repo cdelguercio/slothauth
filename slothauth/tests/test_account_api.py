@@ -167,7 +167,7 @@ class ApiAuthTest(TestCase):
         self.test_auth_signup_passwordless()
 
         response = self.client.post(reverse('account-signup'), data={'email': self.email}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED, msg=str(response.status_code) + ': ' + response.content)
 
     def test_auth_signup_with_password(self):
         response = self.client.post(reverse('account-signup'), data={'email': self.email, 'password': self.password}, format='json')
