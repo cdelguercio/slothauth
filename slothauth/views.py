@@ -59,6 +59,8 @@ class AuthViewSet(viewsets.GenericViewSet):
                 else:
                     account.send_passwordless_login_email()
                     return Response(status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'password not given, but account not found for given email'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'user not authenticated and password is given'}, status=status.HTTP_400_BAD_REQUEST)
 
     @list_route(methods=['post'])
