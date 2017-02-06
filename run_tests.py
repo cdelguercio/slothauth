@@ -60,7 +60,6 @@ settings.configure(DEBUG=True,
                                'django.contrib.messages.context_processors.messages',
                            ],
                            'loaders': [
-                               'django_mobile.loader.Loader',
                                'django.template.loaders.filesystem.Loader',
                                'django.template.loaders.app_directories.Loader',
                            ]

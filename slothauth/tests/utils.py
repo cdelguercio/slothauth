@@ -49,7 +49,7 @@ def capture_exception(fn):
     def wrapper(obj, against):
         try:
             return fn(obj, against)
-        except Exception, e:
+        except Exception as e:
             missing = [key for key in against.keys() if not key in obj.keys()]
             extra = [key for key in obj.keys() if not key in against.keys()]
             raise Exception('''%s
@@ -80,7 +80,7 @@ def is_array(verify_fn):
         return all([verify_fn(obj) for obj in data])
     return f
 
-is_str = lambda x: issubclass(x.__class__, (str, unicode))
+is_str = lambda x: issubclass(x.__class__, str)
 is_int = lambda x: issubclass(x.__class__, int) or (issubclass(x.__class__, str) and x.isdigit())
 is_bool = lambda x: issubclass(x.__class__, bool) or x == 'true' or x == 'false'
 is_float = lambda x: issubclass(x.__class__, float)

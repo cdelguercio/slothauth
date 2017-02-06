@@ -83,7 +83,7 @@ class PasswordResetForm(forms.Form):
         for user in self.users_cache:
             context = {
                 'email': user.email,
-                'uid': urlsafe_base64_encode(str(user.id)),
+                'uid': urlsafe_base64_encode(bytes(user.id)),
                 'user': user,
                 'token': token_generator.make_token(user),
                 'domain': settings.ACCOUNT_EMAIL_DOMAIN,

@@ -39,7 +39,7 @@ from django.utils.translation import ugettext as _
 
 def send_mail(subject, message_plain, message_html, email_from, email_to, custom_headers={}, attachments=()):
 
-    if isinstance(email_to, basestring):
+    if isinstance(email_to, str):
         email_to = [email_to]
 
     if not message_plain and not message_html:

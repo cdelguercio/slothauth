@@ -141,9 +141,9 @@ class ApiAuthTest(TestCase):
         self.test_auth_signup_with_password()
 
         response = self.client.post(reverse('account-login'), data={'email': self.email, 'password': self.password}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, msg=str(response.status_code) + ': ' + str(response.content))
 
-        content = response.content
+        content = response.content.decode("utf-8")
 
         self.assertTrue(obj_is(content, is_user_me), msg=content)
 
@@ -155,9 +155,9 @@ class ApiAuthTest(TestCase):
 
     def test_auth_signup_passwordless(self):
         response = self.client.post(reverse('account-signup'), data={'email': self.email}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, msg=str(response.status_code) + ': ' + str(response.content))
 
-        content = response.content
+        content = response.content.decode("utf-8")
 
         self.assertTrue(obj_is(content, is_user_me), msg=content)
         account = Account.objects.get(email=self.email)
@@ -167,13 +167,13 @@ class ApiAuthTest(TestCase):
         self.test_auth_signup_passwordless()
 
         response = self.client.post(reverse('account-signup'), data={'email': self.email}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_412_PRECONDITION_FAILED, msg=str(response.status_code) + ': ' + str(response.content))
 
     def test_auth_signup_with_password(self):
         response = self.client.post(reverse('account-signup'), data={'email': self.email, 'password': self.password}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, msg=str(response.status_code) + ': ' + str(response.content))
 
-        content = response.content
+        content = response.content.decode("utf-8")
 
         self.assertTrue(obj_is(content, is_user_me), msg=content)
         account = Account.objects.get(email=self.email)
@@ -181,20 +181,20 @@ class ApiAuthTest(TestCase):
 
     def test_auth_logout(self):
         response = self.client.delete(reverse('account-logout'), format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + str(response.content))
 
     def test_password_reset(self):
 
         # check that non-existant email sends back an error
         response = self.client.post(reverse('account-reset-password'), data={'email': self.email}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, msg=str(response.status_code) + ': ' + str(response.content))
         self.assertEqual(len(mail.outbox), 0)
 
         # check that existing email sends back a good response and sends an email
         account = AccountFactory(email=self.email)
         num_emails = len(mail.outbox)
         response = self.client.post(reverse('account-reset-password'), data={'email': account.email}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + response.content + ': ' + str(account.email))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + str(response.content) + ': ' + str(account.email))
         self.assertEqual(len(mail.outbox), num_emails + 1)
 
     def test_change_email(self):
@@ -214,7 +214,7 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_email/', data={'email': NEW_EMAIL, 'confirm_email': NEW_EMAIL, 'password': self.password}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + str(response.content))
 
         account = Account.objects.all()[0]
 
@@ -225,8 +225,8 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_email/', data={'email': NEW_MISMATCH_EMAIL, 'confirm_email': NEW_EMAIL, 'password': self.password}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + response.content)
-        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + str(response.content))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content['error'], "EMAIL MISMATCH")
 
         account = Account.objects.all()[0]
@@ -239,8 +239,8 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_email/', data={'email': NEW_FAIL_EMAIL, 'confirm_email': NEW_FAIL_EMAIL, 'password': self.password}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + response.content)
-        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + str(response.content))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content['error'], "EMAIL INVALID")
 
         account = Account.objects.all()[0]
@@ -253,8 +253,8 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_email/', data={'email': NEW_FAIL_EMAIL, 'confirm_email': NEW_FAIL_EMAIL, 'password': WRONG_PASSWORD}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + response.content)
-        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + str(response.content))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content['error'], "BAD PASSWORD")
 
         account = Account.objects.all()[0]
@@ -267,8 +267,8 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_email/', data={}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + response.content)
-        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + str(response.content))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content['error'], "EMAIL MISSING")
 
         account = Account.objects.all()[0]
@@ -292,7 +292,7 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_password/', data={'current_password': WRONG_PASSWORD, 'password': NEW_PASSWORD, 'password_repeat': NEW_PASSWORD}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + str(response.content))
 
         account = Account.objects.all()[0]
 
@@ -303,7 +303,7 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_password/', data={'current_password': self.password, 'password': NEW_PASSWORD, 'password_repeat': BAD_PASSWORD_REPEAT}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, msg=str(response.status_code) + ': ' + str(response.content))
 
         account = Account.objects.all()[0]
 
@@ -314,7 +314,7 @@ class ApiAuthTest(TestCase):
 
         response = self.client.patch('/api/v1/accounts/change_password/', data={'current_password': self.password, 'password': NEW_PASSWORD, 'password_repeat': NEW_PASSWORD}, format='json', **header)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + response.content)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT, msg=str(response.status_code) + ': ' + str(response.content))
 
         account = Account.objects.all()[0]
 

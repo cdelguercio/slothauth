@@ -12,7 +12,11 @@ SlothAuth is a Django app for adding user authentication and accounts with the f
 - Password Reset
 - Change email
 
-Current SlothAuth has been tested with Django 1.9.x
+SlothAuth is meant to be programmer friendly. It doesn't sets things up for you and each component can be easily overridden.
+
+SlothAuth 0.6.3 and above have been tested with Django 1.10.x and Python 3.5
+
+Earlier versions tested with Django 1.9.x and Python 2.7
 
 ### Credit
 
@@ -27,6 +31,21 @@ pip install slothauth
 ### Updating SlothAuth
 
 Since SlothAuth's SlothAuthBaseUser is abstract, it might be necessary to run makemigrations on your user account app after updating SlothAuth.
+
+### Usage
+
+When DEBUG == True, including the slothauth urls will give you the following debug urls which are attached to some unstyled template forms:
+
+```
+r'^signup/?'
+r'^login/?'
+r'^password_reset/?'
+r'^change_email/?'
+r'^profile/?'
+r'^logout/?'
+r'^passwordless_signup/?'
+r'^passwordless_login/?'
+```
 
 ### Quick Start
 

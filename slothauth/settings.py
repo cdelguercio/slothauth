@@ -2,6 +2,8 @@ import warnings
 
 from django.conf import settings
 
+DEBUG = getattr(settings, 'DEBUG', False)
+
 if not hasattr(settings, 'AUTH_USER_MODEL') or getattr(settings, 'AUTH_USER_MODEL') == 'auth.User':
     warnings.warn('User must set \'AUTH_USER_MODEL\' to a subclass of \'slothauth.SlothAuthBaseUser\' in project settings. Check that no other apps are editing the value of \'AUTH_USER_MODEL\'.')
 
