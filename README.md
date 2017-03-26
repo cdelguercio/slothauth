@@ -103,6 +103,14 @@ class User(SlothAuthBaseUser):
     # add custom fields here, or just put 'pass'
 ```
 
+Add your app to INSTALLED_APPS
+
+```
+INSTALLED_APPS += [
+    'your_app',
+]
+```
+
 Be sure to make a migration for your app and run it
 ```
 python manage.py makemigrations
