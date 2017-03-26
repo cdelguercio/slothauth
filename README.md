@@ -103,6 +103,12 @@ class User(SlothAuthBaseUser):
     # add custom fields here, or just put 'pass'
 ```
 
+Be sure to make a migration for your app and run it
+```
+python manage.py makemigrations
+python manage.py migrate your_app
+```
+
 6) Make sure that your AUTH_USER_MODEL setting is set to your subclass of SlothAuthBaseUser:
 ```
 AUTH_USER_MODEL = 'your_app.User'
