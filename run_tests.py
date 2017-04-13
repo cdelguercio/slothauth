@@ -31,7 +31,7 @@ settings.configure(DEBUG=True,
                        }
                    },
                    ROOT_URLCONF='slothauth.urls',
-                   MIDDLEWARE_CLASSES=[
+                   MIDDLEWARE=[
                        'django.middleware.security.SecurityMiddleware',
                        'django.contrib.sessions.middleware.SessionMiddleware',
                        'django.middleware.common.CommonMiddleware',
