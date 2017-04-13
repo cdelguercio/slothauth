@@ -45,17 +45,15 @@ class ImpersonateMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        impersonating = None
-        if hasattr(request.user, 'can_impersonate') and request.user.can_impersonate and "__impersonate" in request.GET:
-            request.session['impersonate_id'] = int(request.GET["__impersonate"])
-        elif "__unimpersonate" in request.GET and 'impersonate_id' in request.session:
-            del request.session['impersonate_id']
-            impersonating = request.user
-        if hasattr(request.user,
-                   'can_impersonate') and request.user.can_impersonate and 'impersonate_id' in request.session:
-            request.user = Account.objects.get(id=request.session['impersonate_id'])
-            impersonating = request.user
-        request.impersonating = impersonating
+        if (hasattr(request.user, 'can_impersonate') and request.user.can_impersonate) or\
+           (hasattr(request.user, 'is_superuser') and request.user.is_superuser):
+            if 'impersonate_id' in request.session:
+                request.user = Account.objects.get(id=request.session['impersonate_id'])
+            elif "__impersonate" in request.GET:
+                request.session['impersonate_id'] = int(request.GET["__impersonate"])
+                request.user = Account.objects.get(id=request.session['impersonate_id'])
+            elif "__unimpersonate" in request.GET and 'impersonate_id' in request.session:
+                del request.session['impersonate_id']
 
         response = self.get_response(request)
 

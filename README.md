@@ -14,7 +14,7 @@ SlothAuth is a Django app for adding user authentication and accounts with the f
 
 SlothAuth is meant to be programmer friendly. It doesn't sets things up for you and each component can be easily overridden.
 
-SlothAuth 0.7.1 and above have been tested with Django 1.10.x and Python 3.5
+SlothAuth 0.7.2 and above have been tested with Django 1.10.x and Python 3.5
 
 Earlier versions tested with Django 1.9.x and Python 2.7
 

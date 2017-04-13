@@ -36,6 +36,14 @@ class SlothAuthBaseUser(AbstractBaseUser, PermissionsMixin):
     one_time_authentication_key = RandomField(max_length=32)
     password_reset_key = RandomField(max_length=32)
 
+    # Impersonate fields
+
+    can_impersonate = models.BooleanField(_('impersonate'),
+                                          default=False,
+                                          help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
+
+    # Manager
+
     objects = UserManager()
 
     # Meta
