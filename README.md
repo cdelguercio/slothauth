@@ -18,21 +18,21 @@ SlothAuth 0.7.2 and above have been tested with Django 1.10.x and Python 3.5
 
 Earlier versions tested with Django 1.9.x and Python 2.7
 
-### Credit
+## Credit
 
 SlothAuth was authored by Chris Del Guercio and Shane Zilinskas
 
-### Installation
+## Installation
 
 ```
 pip install slothauth
 ```
 
-### Updating SlothAuth
+## Updating SlothAuth
 
 Since SlothAuth's SlothAuthBaseUser is abstract, it might be necessary to run makemigrations on your user account app after updating SlothAuth.
 
-### Usage
+## Usage
 
 When DEBUG == True, including the slothauth urls will give you the following debug urls which are attached to some unstyled template forms:
 
@@ -47,7 +47,7 @@ r'^passwordless_signup/?'
 r'^passwordless_login/?'
 ```
 
-### Quick Start
+## Quick Start
 
 1) Add slothauth to your INSTALLED_APPS in your project's settings.py file:
 ```
@@ -161,4 +161,18 @@ class CustomAccountForm(AccountForm):
 
 ```
 ACCOUNT_FORM = 'your_app.forms.CustomAccountForm'
+```
+
+## Running Tests
+
+1) Install dependencies
+
+```
+pip3 install factory_boy
+```
+
+2) Run tests
+
+```
+python3 run_tests.py
 ```
