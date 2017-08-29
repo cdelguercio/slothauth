@@ -34,8 +34,7 @@ Since SlothAuth's SlothAuthBaseUser is abstract, it might be necessary to run ma
 
 ## Usage
 
-When DEBUG == True, including the slothauth urls will give you the following debug urls which are attached to some unstyled template forms:
-
+When DEBUG == True, including the slothauth URLs will give you the following debug URLs which are attached to some unstyled template forms:
 ```
 r'^signup/?'
 r'^login/?'
@@ -47,28 +46,28 @@ r'^passwordless_signup/?'
 r'^passwordless_login/?'
 ```
 
+Note: These URLs will only work if you named your user model "Account"
+
 ## Quick Start
 
-1) Add slothauth to your INSTALLED_APPS in your project's settings.py file:
+1) Add slothauth, rest_framework, and rest_framework.authtoken to your INSTALLED_APPS in your project's settings.py file:
 ```
 INSTALLED_APPS += [
     'slothauth',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 ```
 
-2) Add the following to your Django projects urls.py file:
+2) Add the following to your project's urls.py file:
 ```
+from django.conf.urls import url, include
 import slothauth.urls as slothauth_urls
 
 urlpatterns = [
     ### your other urls here ###
     url(r'^', include(slothauth_urls)),
 ]
-```
-
-Import include with:
-```
-from django.conf.urls import include
 ```
 
 3) Add the Passwordless User middleware to your settings.py file:
@@ -95,13 +94,15 @@ AUTHENTICATION_BACKENDS = [
 ]
 ```
 
-5) Create a subclass of SlothAuthBaseUser in any of your project's model files:
+5) Create a subclass of SlothAuthBaseUser in the model file of your User/Account app:
 ```
 from slothauth.models import SlothAuthBaseUser
 
-class User(SlothAuthBaseUser):
+class Account(SlothAuthBaseUser):
     # add custom fields here, or just put 'pass'
 ```
+
+Note: You can name this model whatever you'd like, but the Slothauth debug URLs will only work if you name it "Account".
 
 Add your app to INSTALLED_APPS
 
@@ -119,7 +120,7 @@ python manage.py migrate your_app
 
 6) Make sure that your AUTH_USER_MODEL setting is set to your subclass of SlothAuthBaseUser:
 ```
-AUTH_USER_MODEL = 'your_app.User'
+AUTH_USER_MODEL = 'your_app.Account'
 ```
 
 7) Run the SlothAuth migration
@@ -134,10 +135,10 @@ MIDDLEWARE_CLASSES += [
 ]
 ```
 
-9) Set up email in your settings.py file. You can set up a gmail account to use for testing as long as you turn
+9) (Optional) Set up email in your settings.py file. You can set up a gmail account to use for testing as long as you turn
 "Allow less secure apps" at https://myaccount.google.com/security#connectedapps to "ON". If it still doesn't work, try
 visiting https://accounts.google.com/DisplayUnlockCaptcha. It should fix it within 15 minutes. A lot of times, Gmail
-will continuously ban your account and you have to keep visiting that url to unban yourself.
+will continuously ban your account and you have to keep visiting that to unban yourself.
 ```
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
